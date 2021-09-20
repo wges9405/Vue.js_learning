@@ -1,3 +1,32 @@
+html {
+    display: block;
+    overflow-y: scroll;
+    scroll-behavior: smooth;
+}
+body {
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+header {
+    background: white;
+    border-bottom-width: 2px;
+    border-bottom-style: dotted;
+    border-bottom-color: rgb(190, 190, 190);
+}
+footer {
+    margin: 0 auto;
+    text-align: center;
+    font-size: 14px;
+    background: white;
+    border-top-width: 2px;
+    border-top-style: dotted;
+    border-top-color: rgb(190, 190, 190);
+}
+footer a {
+    color: black;
+    font-weight: 600px;
+}
+
 .header-menu {
     display: flex;
     justify-content: space-between;
@@ -6,13 +35,90 @@
     display: flex;
     align-items: center;
 }
+.menu-links a {
+    margin:0 15px;
+    color:black;
+    font-size:16px;
+}
+
+main {
+    margin: 0; 
+    padding:0;
+}
+.hero-container {
+    padding: 80px 20px 40px;
+    background: rgb(255, 227, 174);
+    text-align: center;
+}
+
+h2.hero-title {
+    margin: auto;
+    font-size: 60px;
+    max-width: 500px;
+}
+p.hero-sub-title {
+    margin: 20px auto;
+    font-size: 25px;
+    max-width: 450px;
+}
+
+.features-inner {
+    margin: auto;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    flex-wrap: wrap;
+}
+.feature {
+    margin:20px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 250px;
+}
+.feature img {
+    max-width: 100px;
+}
+
+.subhero-container {
+    padding: 50px;
+    background: rgb(53, 68, 97);
+    text-align: center;
+}
+.subhero-container h3 {
+    margin: auto;
+    color:rgb(255, 227, 174);
+    font-weight: bold;
+    font-size: 40px;
+    max-width: 800px;
+}
+
+.swap-btn-blk {
+    padding: 10px;
+    background: rgb(53, 68, 97);
+    text-align: center;
+}
+
+.swap-btn {
+    padding: 10px 15px;
+    color:rgb(255, 227, 174);
+    background: rgb(53, 68, 97);
+    border: 1px solid rgb(255, 227, 174);
+    font-weight: bold;
+    font-size: 20px;
+    cursor: pointer;
+    transition: .5s;
+}
+.swap-btn:hover {
+    color:rgb(53, 68, 97);
+    background: rgb(255, 227, 174);
+    border-color: rgb(53, 68, 97);
+}
+
 @media screen and (max-width: 500px) {
     .header-menu {
         flex-direction: column;
         align-items: center;
     }
-}
-.menu-links a {
-    margin:0 15px;
-    color:black;
 }
