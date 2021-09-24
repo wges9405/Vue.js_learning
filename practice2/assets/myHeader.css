@@ -1,0 +1,96 @@
+header {
+    height: 75px;
+    margin-top: 0;
+    right: 0px;
+    position: absolute;
+    max-width: 100%;
+    box-sizing: inherit;
+    transition: .5s;
+}
+button {
+    background-color: #fff;
+    cursor: pointer;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    color: #949494;
+}
+button.tool {
+    margin:0 10px;
+}
+
+.toolbar {
+    height: 75px;
+    margin: 0;
+    padding: 10px 15px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    position: relative;
+    box-sizing: inherit;
+    z-index: 0;
+}
+
+.nav-shift {
+    display: flex;
+    flex-direction: row;
+}
+
+.search-bar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    position: relative;
+    box-sizing: inherit;
+}
+
+.search-label {
+    left: 0;
+    position: absolute;
+    font-size: 14px;
+    color: rgba(0, 0, 0, .6);
+    pointer-events: none;
+    box-sizing: inherit;
+    transition: .3s ;
+    
+}
+.search-input {
+    background-color: transparent;
+    border: none;
+    border-bottom: 1px solid #b4b2b2;
+    outline: none;
+    box-sizing: inherit;
+    transition: .3s;
+    font-size: 16px;
+}
+.search-input:focus  {
+    border-bottom: 1px solid purple;
+}
+::placeholder {color :transparent;}
+.search-input:not(:placeholder-shown) + .search-label  {
+    top:-10px;
+    font-size: 10px;
+}
+.search-input:focus + .search-label  {
+    color: purple;
+    top:-10px;
+    font-size: 10px;
+}
+
+.tool-btn {
+    margin: 0 0 10px 10px;
+    padding: 10px 15px;
+    background-color: transparent;
+    width: 54px;
+    height: 44px;
+    box-sizing: inherit;
+    color: black;
+    cursor: pointer;
+    transition: .3s;
+}
+.tool-btn:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 5px;;
+}
