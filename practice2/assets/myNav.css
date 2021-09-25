@@ -37,10 +37,14 @@ nav {
     padding: 0 8px;
     background-color: transparent;
     transition: .3s;
+    outline: none;
+    border-radius: 4px ;
 }
 .menu-a:hover {
     background-color: rgba(255, 255, 255, 0.199);
-    border-radius: 4px !important;
+}
+.menu-a:focus {
+    background-color: rgba(255, 255, 255, 0.199);
 }
 .list {
     display: flex;
@@ -65,5 +69,4 @@ nav {
 .theme-light {
     background-color: #4caf50 !important;
     border-color: #4caf50 !important;
-    border-radius: 4px ;
 }

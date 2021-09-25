@@ -16,6 +16,7 @@ button {
     height: 40px;
     font-size: 20px;
     color: #949494;
+    outline: none;
 }
 button.tool {
     margin:0 10px;
@@ -78,7 +79,6 @@ button.tool {
     top:-10px;
     font-size: 10px;
 }
-
 .tool-btn {
     margin: 0 0 10px 10px;
     padding: 10px 15px;
@@ -89,8 +89,12 @@ button.tool {
     color: black;
     cursor: pointer;
     transition: .3s;
+    border-radius: 5px;
+    outline: none;
 }
 .tool-btn:hover {
     background-color: rgba(0, 0, 0, 0.05);
-    border-radius: 5px;;
+}
+.tool-btn:focus {
+    background-color: rgba(0, 0, 0, 0.05);
 }

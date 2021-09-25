@@ -100,7 +100,7 @@ const myNav = {
 
 const myHeader = {
     template:`
-        <header :style="{'left':left}">
+        <header>
             <div class="toolbar">
                 <div class="nav-shift">
                     <button class="tool btn-nav-shift" @click="shiftNav()">
@@ -123,13 +123,13 @@ const myHeader = {
                 </div>
                 <div style="width:12px"></div>
                 <!---->
-                <a class="list list-icon tool-btn">
+                <a class="list list-icon tool-btn" href="" @click.prevent="">
                     <i class="mdi mdi-view-dashboard"></i>
                 </a>
                 <button  class="list list-icon tool-btn">
                     <i class="mdi mdi-bell" style="color: #000;"></i>
                 </button>
-                <a  class="list list-icon tool-btn">
+                <a  class="list list-icon tool-btn" href="" @click.prevent="">
                     <i class="mdi mdi-account"></i>
                 </a>
             </div>
@@ -141,7 +141,6 @@ const myHeader = {
     },
     props: {
         curPage: String,
-        left: String,
     },
     data() {
         return {
@@ -150,20 +149,173 @@ const myHeader = {
     },
 }
 
+const dashboard = {
+    template:`
+        <section id="Dashboard" class="container">
+            <div class="row">
+                <div class="col-lg-4 col-12">
+                    <div class="card">
+                        <div class="d-flex">
+                            <div class="card-head">
+                                <div class="ct-square">
+                                    <svg  width="100%" height="100%" style="width:100%;height:100%">
+                                        <g>
+                                            <line y1="120" y2="120" x1="40" x2="1000" class="ct-grid"></line>
+                                        </g>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h4 class="card-title">Websit Views</h4>
+                            <p>Last Campaign Performance</p>
+                        </div>
+                        <hr class="divider">
+                        <div class="action">
+                            <i class="mdi mdi-clock-outline"></i>
+                            <span>updated 10 minutes ago</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-12">
+                    <div class="card">
+                        <div class="d-flex">
+                            <div class="card-head">
+                                <div class="ct-square">
+                                    <svg  width="100%" height="100%" style="width:100%;height:100%">
+                                        <g>
+                                            <line y1="120" y2="120" x1="40" x2="1000" class="ct-grid"></line>
+                                        </g>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h4 class="card-title">Websit Views</h4>
+                            <p>Last Campaign Performance</p>
+                        </div>
+                        <hr class="divider">
+                        <div class="action">
+                            <i class="mdi mdi-clock-outline"></i>
+                            <span>updated 10 minutes ago</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-12">
+                    <div class="card">
+                        <div class="d-flex">
+                            <div class="card-head">
+                                <div class="ct-square">
+                                    <svg  width="100%" height="100%" style="width:100%;height:100%">
+                                        <g>
+                                            <line y1="120" y2="120" x1="40" x2="1000" class="ct-grid"></line>
+                                        </g>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h4 class="card-title">Websit Views</h4>
+                            <p>Last Campaign Performance</p>
+                        </div>
+                        <hr class="divider">
+                        <div class="action">
+                            <i class="mdi mdi-clock-outline"></i>
+                            <span>updated 10 minutes ago</span>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </section>
+    `,
+}
+const userProfile = {
+    template:`<section id="User Profile"></section>`,
+}
+const regularTables = {
+    template:`<section id="Regular Tables"></section>`,
+}
+const typography = {
+    template:`<section id="Typography"></section>`,
+}
+const icons = {
+    template:`<section id="Icons"></section>`,
+}
+const googleMaps = {
+    template:`<section id="Google Maps"></section>`,
+}
+const notifications = {
+    template:`<section id="Notificatinos"></section>`,
+}
+
+const myMain = {
+    components: {
+        dashboard,
+        userProfile,
+        regularTables,
+        typography,
+        icons,
+        googleMaps,
+        notifications,
+    },
+    template:`
+        <main>
+            <dashboard v-if="curPage==='Dashboard'"></dashboard>
+            <user-profile v-else-if="curPage==='User Profile'"></user-profile>
+            <regular-tables v-else-if="curPage==='Regular Tables'"></regular-tables>
+            <typography v-else-if="curPage==='Typography'"></typography>
+            <icons v-else-if="curPage==='Icons'"></icons>
+            <google-maps v-else-if="curPage==='Google Maps'"></google-maps>
+            <notifications v-else-if="curPage==='Notifications'"></notifications>
+        </main>
+    `,
+    props: {
+        curPage: String,
+    }
+}
+
+const myFooter = {
+    template:`
+        <footer>
+            <div class="foot-container">
+                <div class="content">
+                    <a class="foot-a" href="" @click.prevent="">about us</a>
+                </div>
+                <div class="content">
+                    <a class="foot-a" href="" @click.prevent="">blog</a>
+                </div>
+                <div class="content">
+                    <a class="foot-a" href="" @click.prevent="">licenses</a>
+                </div>
+                <div style="flex-grow:1"></div>
+                <div>
+                    2021, made by 
+                    <a>Ray</a>
+                    refered to 
+                    <a class="foot-a" href="https://demos.creative-tim.com/vuetify-material-dashboard/#/">Reference</a>
+                </div> 
+            </div>
+        </footer>
+    `,
+    props: {
+        left: String,
+    }
+}
+
 const app = {
     components: {
         myNav,
         myHeader,
+        myMain,
+        myFooter,
     },
     template:`
-        <my-header :curPage=curPage :left=left @shift=shiftNav></my-header>
+        <my-header :curPage=curPage :style="{'left':left}" @shift=shiftNav></my-header>
 
         <my-nav :curPage=curPage :transform=transform @change=changePage></my-nav>
-        <main></main>
-        <!--
-        <my-main></my-main>
-        <my-footer></my-footer>
-        -->
+        <my-main :curPage=curPage :style="{'padding-left':left}"></my-main>
+        <my-footer :style="{'margin-left':left}"></my-footer>
     `,
     data() {
         return {

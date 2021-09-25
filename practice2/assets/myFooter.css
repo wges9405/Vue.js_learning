@@ -1,0 +1,27 @@
+footer {
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: 5px 20px;
+    box-sizing: inherit;
+    transition: .5s;
+}
+
+.foot-container {
+    display: flex;
+    flex-direction: row;
+    margin: 5px auto;
+    max-width: 1600px;
+    box-sizing: inherit;
+    align-items: center;
+}
+.content {
+    margin: 5px 10px;
+    box-sizing: inherit;
+}
+
+.foot-a {
+    text-transform:uppercase;
+    color: rgba(0, 0, 0, 0.7);
+    font-size: 14px;
+    font-weight: bold;
+    text-decoration: none;
+}
