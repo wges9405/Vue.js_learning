@@ -24,10 +24,17 @@ main {
 }
 .ct-square {
     width: 100%;
-    max-height: 150px;    
+    max-height: 150px;
+    position: relative;
 }
-.ct-grid {
-    stroke:black;
+.ct-square::before {
+    content: "";
+    max-height: 150px;
+    padding-bottom: 100%;
+    width: 0;
+    height: 0;
+    display: block;
+    float: none;
 }
 .card-body {
     padding: 15px 0 0 8px;

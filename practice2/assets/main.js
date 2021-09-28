@@ -148,8 +148,154 @@ const myHeader = {
         }
     },
 }
+const svg_template = {
+    template:`
+      <svg  xmlns="http://www.w3.org/2000/svg"
+            style="width:100%;height:100%;position:absolute;top:0;left:0;"
+            :width=width :height=height :viewBox="viewBox"
+            preserveAspectRatio="none">
+        <!-- x axis -->
+        <g class="ct-axis" v-show=shows[0]>
+          <line v-for="(tag, index) in xTags"
+                :x1=x[index] :x2=x[index]
+                :y1=pt :y2=height-pd
+                :class="[tag==''?'ct-axis-base':'']"
+                ></line>
+        </g>
+        <!-- x tags -->
+        <g class="ct-tags ct-x-tag" v-show=shows[1]>
+          <text v-for="(tag, index) in xTags"
+                :x=x[index] :y=height-pd+20
+                >{{ tag }}</text>
+        </g>
+        <!-- y axis -->
+        <g class="ct-axis" v-show=shows[2]>
+          <line v-for="(tag, index) in yTags"
+                :x1=pl :x2=width-pr
+                :y1=y[index] :y2=y[index]
+                :class="[tag=='0'?'ct-axis-base':'']"
+                ></line>
+        </g>
+        <!-- y tags -->
+        <g class="ct-tags ct-y-tag" v-show=shows[3]>
+          <text v-for="(tag, index) in yTags"
+                :x=pl-10 :y=y[index]
+                >{{ tag }}</text>
+        </g>
+        <!-- bars -->
+        <g class="ct-bar" v-show=shows[4]>
+          <line v-for="(val, index) in vals"
+                :x1=x[index+1] :x2=x[index+1]
+                :y1=(1-val/max)*height :y2=height-pd
+                ></line>
+        </g>
+        <!-- circle -->
+        <g class="ct-circle" v-show=shows[5]>
+          <circle v-for="(val,index) in vals"
+                  :cx=x[index+1]
+                  :cy=(1-val/max)*height
+                  r=5
+                  />
+        </g>
+        <!-- path -->
+        <g class="ct-path" v-show=shows[6]>
+          <path :d=d />
+        </g>
+      </svg>
+    `,
+    props: {
+        shows: Array,
+        width: Number, height: Number,
+        pl: Number, pr: Number, pt: Number, pd: Number,
+        xTags: Array, yTags: Array, vals: Array,
+    },
+    data() {
+        return {
+            viewBox: '',
+            max: 0,
+            d: '',
+            x: [],
+            y: [],
+            val: [],
+        }
+    },
+    created() {
+        this.viewBox= '0 0 ' + this.width + ' ' + this.height
+        this.max = this.yTags[0]*2-this.yTags[1]
+        for (var i=0; i<this.xTags.length; i++) {
+            this.x.push(i/this.xTags.length*(this.width-this.pl-this.pr)+this.pl)
+            if (i>=1) this.val.push((1-this.vals[i-1]/this.max)*this.height)
+          
+            if (i==1) {
+                this.d = 'M' + this.x[i] +' '+ this.val[i-1]
+            }
+            else if (i>1) {
+                this.d = this.d + ' ' + 'L' + this.x[i] +' '+ this.val[i-1]
+            }
+        }
+        for (var i=0; i<this.yTags.length; i++) {
+          this.y.push((i+1)/this.yTags.length*(this.height-this.pt-this.pd)+this.pt)
+        }
+    },
+}
 
+const svg1 = {
+    components: {svg_template},
+    template:`
+        <svg_template :width=width :height=height :pl=pl :pr=pr :pt=pt :pd=pd
+                    :xTags=xTags :yTags=yTags :vals=vals :shows=shows></svg_template>
+    `,
+    data() {
+        return {
+            // x-axis x-label y-axis y-label bar circle path
+            shows: [true, true, true, true, true, false, false], 
+            width: 400,
+            height: 400,
+            pl: 40, pr:10, pt:10, pd:40,
+            xTags: ['','Ja','Fe','Ma','Ap','Mai','Ju','Jul','Au','Se','Oc','No','De'],
+            yTags: [800,600,400,200,0,],
+            vals: [542,443,320,780,553,453,326,434,568,610,756,895],
+        }
+    },
+}
+const svg2 = {components: {svg_template},
+    template:`
+        <svg_template :width=width :height=height :pl=pl :pr=pr :pt=pt :pd=pd
+                    :xTags=xTags :yTags=yTags :vals=vals :shows=shows></svg_template>
+    `,
+    data() {
+        return {
+            // x-axis x-label y-axis y-label bar circle path
+            shows: [true, true, true, true, false, true, true], 
+            width: 400,
+            height: 400,
+            pl: 40, pr:10, pt:10, pd:40,
+            xTags: ['','M','T','W','T','F','S','S'],
+            yTags: [40,30,20,10,0,],
+            vals: [12,17,7,17,23,18,38],
+        }
+    },
+}
+const svg3 = {components: {svg_template},
+    template:`
+        <svg_template :width=width :height=height :pl=pl :pr=pr :pt=pt :pd=pd
+                    :xTags=xTags :yTags=yTags :vals=vals :shows=shows></svg_template>
+    `,
+    data() {
+        return {
+            // x-axis x-label y-axis y-label bar circle path
+            shows: [true, true, true, true, false, true, true], 
+            width: 400,
+            height: 400,
+            pl: 40, pr:10, pt:10, pd:40,
+            xTags: ['','12am','3pm','6pm','9pm','12pm','3am','6am','9am'],
+            yTags: [800,600,400,200,0,],
+            vals: [230,750,450,300,280,240,200,190],
+        }
+    },
+}
 const dashboard = {
+    components: {svg1,svg2,svg3},
     template:`
         <section id="Dashboard" class="container">
             <div class="row">
@@ -158,11 +304,7 @@ const dashboard = {
                         <div class="d-flex">
                             <div class="card-head">
                                 <div class="ct-square">
-                                    <svg  width="100%" height="100%" style="width:100%;height:100%">
-                                        <g>
-                                            <line y1="120" y2="120" x1="40" x2="1000" class="ct-grid"></line>
-                                        </g>
-                                    </svg>
+                                    <svg1 class="svg1"></svg1>
                                 </div>
                             </div>
                         </div>
@@ -182,16 +324,12 @@ const dashboard = {
                         <div class="d-flex">
                             <div class="card-head">
                                 <div class="ct-square">
-                                    <svg  width="100%" height="100%" style="width:100%;height:100%">
-                                        <g>
-                                            <line y1="120" y2="120" x1="40" x2="1000" class="ct-grid"></line>
-                                        </g>
-                                    </svg>
+                                    <svg2 class="svg2"></svg2>
                                 </div>
                             </div>
                         </div>
                         <div class="card-body">
-                            <h4 class="card-title">Websit Views</h4>
+                            <h4 class="card-title">Daily Sales</h4>
                             <p>Last Campaign Performance</p>
                         </div>
                         <hr class="divider">
@@ -206,16 +344,12 @@ const dashboard = {
                         <div class="d-flex">
                             <div class="card-head">
                                 <div class="ct-square">
-                                    <svg  width="100%" height="100%" style="width:100%;height:100%">
-                                        <g>
-                                            <line y1="120" y2="120" x1="40" x2="1000" class="ct-grid"></line>
-                                        </g>
-                                    </svg>
+                                    <svg3 class="svg3"></svg3>
                                 </div>
                             </div>
                         </div>
                         <div class="card-body">
-                            <h4 class="card-title">Websit Views</h4>
+                            <h4 class="card-title">Completed Tasks</h4>
                             <p>Last Campaign Performance</p>
                         </div>
                         <hr class="divider">

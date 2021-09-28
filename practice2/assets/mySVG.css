@@ -1,0 +1,32 @@
+/* Default */
+.ct-axis {
+    stroke:black;
+    stroke-width: 1px;
+    stroke-dasharray: 2px;
+}
+.ct-axis-base {
+    stroke-dasharray: 0px;
+}
+.ct-tags {
+    font-size: 16px;
+    font-weight: bold;
+}
+.ct-x-tag {
+    text-anchor: middle;
+}
+.ct-y-tag {
+    text-anchor: end;
+}
+.ct-bar {
+    stroke:darkred;
+    stroke-width: 10px;
+}
+.ct-circle {
+    stroke: green;
+    fill: green;
+}
+.ct-path {
+    stroke: green;
+    stroke-width: 3px;
+    fill: none;
+}
