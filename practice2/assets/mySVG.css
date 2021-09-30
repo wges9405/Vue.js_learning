@@ -1,4 +1,27 @@
 /* Default */
+.ct-square {
+    width: 100%;
+    max-height: 150px;
+    position: relative;
+    overflow: hidden;
+}
+.ct-square::before {
+    content: "";
+    max-height: 150px;
+    padding-bottom: 100%;
+    width: 0;
+    height: 0;
+    display: block;
+    float: none;
+}
+.ct-square svg {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: translateY(-3%);
+}
 .ct-axis {
     stroke:black;
     stroke-width: 1px;
@@ -7,18 +30,28 @@
 .ct-axis-base {
     stroke-dasharray: 0px;
 }
-.ct-tags {
-    font-size: 16px;
+.ct-tags span{
+    font-size: 12px;
     font-weight: bold;
 }
-.ct-x-tag {
-    text-anchor: middle;
+.ct-x-tag span{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    width:100%;
+    height:100%;
 }
-.ct-y-tag {
-    text-anchor: end;
+  .ct-y-tag span{
+    display:flex;
+    flex-direction:column;
+    align-items:end;
+    justify-content:flex-end;
+    width:100%;
+    height:100%;
 }
 .ct-bar {
-    stroke:darkred;
+    stroke:rgba(139, 0, 0, .75);
     stroke-width: 10px;
 }
 .ct-circle {

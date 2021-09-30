@@ -148,54 +148,58 @@ const myHeader = {
         }
     },
 }
-const svg_template = {
+const svg_content = {
     template:`
-      <svg  xmlns="http://www.w3.org/2000/svg"
-            style="width:100%;height:100%;position:absolute;top:0;left:0;"
-            :width=width :height=height :viewBox="viewBox"
-            preserveAspectRatio="none">
-        <!-- x axis -->
-        <g class="ct-axis" v-show=shows[0]>
-          <line v-for="(tag, index) in xTags"
-                :x1=x[index] :x2=x[index]
-                :y1=pt :y2=height-pd
-                :class="[tag==''?'ct-axis-base':'']"
-                ></line>
+    <svg  xmlns="http://www.w3.org/2000/svg" width=100% height=100% preserveAspectRatio="none">
+        <!-- Axis -->
+        <g class="ct-axis">
+            <!-- x axis -->
+            <g v-show=shows[0]>
+                <line v-for="(tag, index) in xTags"
+                      :x1=x[index]*width :x2=x[index]*width
+                      :y1=border[2]*height :y2=y[y.length-1]*height
+                      :class="[tag==''?'ct-axis-base':'']"
+                      ></line>
+            </g>
+            <!-- y axis -->
+            <g v-show=shows[1]>
+                <line v-for="(tag, index) in yTags"
+                      :x1=x[0]*width :x2=(1-border[1])*width
+                      :y1=y[index]*height :y2=y[index]*height
+                      :class="[tag=='0'?'ct-axis-base':'']"
+                      ></line>
+            </g>
         </g>
-        <!-- x tags -->
-        <g class="ct-tags ct-x-tag" v-show=shows[1]>
-          <text v-for="(tag, index) in xTags"
-                :x=x[index] :y=height-pd+20
-                >{{ tag }}</text>
-        </g>
-        <!-- y axis -->
-        <g class="ct-axis" v-show=shows[2]>
-          <line v-for="(tag, index) in yTags"
-                :x1=pl :x2=width-pr
-                :y1=y[index] :y2=y[index]
-                :class="[tag=='0'?'ct-axis-base':'']"
-                ></line>
-        </g>
-        <!-- y tags -->
-        <g class="ct-tags ct-y-tag" v-show=shows[3]>
-          <text v-for="(tag, index) in yTags"
-                :x=pl-10 :y=y[index]
-                >{{ tag }}</text>
+        <!-- Tags -->
+        <g>
+            <!-- x tags -->
+            <g class="ct-x-tag" v-show=shows[2]>
+                <foreignObject v-for="(tag, index) in xTags"
+                               :x=(x[index]-x[0]/2)*width :y=y[y.length-1]*height
+                               :width=x[0]*width :height=border[3]*height>
+                    <span> {{ tag }} </span>
+                </foreignObject>
+            </g>
+            <!-- y tags -->
+            <g class="ct-y-tag" v-show=shows[3]>
+                <foreignObject v-for="(tag, index) in yTags"
+                               :x=0 :y=(y[index]-y[1])*height
+                               :width=x[0]*width-5 :height=y[1]*height>
+                    <span> {{ tag }} </span>
+                </foreignObject>
+            </g>
         </g>
         <!-- bars -->
         <g class="ct-bar" v-show=shows[4]>
-          <line v-for="(val, index) in vals"
-                :x1=x[index+1] :x2=x[index+1]
-                :y1=(1-val/max)*height :y2=height-pd
+          <line v-for="(v, index) in val"
+                :x1=x[index+1]*width :x2=x[index+1]*width
+                :y1=v*height :y2=y[y.length-1]*height
                 ></line>
         </g>
         <!-- circle -->
         <g class="ct-circle" v-show=shows[5]>
-          <circle v-for="(val,index) in vals"
-                  :cx=x[index+1]
-                  :cy=(1-val/max)*height
-                  r=5
-                  />
+          <circle v-for="(v,index) in val"
+                  :cx=x[index+1]*width :cy=v*height r=5 />
         </g>
         <!-- path -->
         <g class="ct-path" v-show=shows[6]>
@@ -206,105 +210,94 @@ const svg_template = {
     props: {
         shows: Array,
         width: Number, height: Number,
-        pl: Number, pr: Number, pt: Number, pd: Number,
-        xTags: Array, yTags: Array, vals: Array,
+        xTags: Array, yTags: Array,
+        x: Array, y: Array, val: Array,
+        border: Array,
     },
     data() {
         return {
-            viewBox: '',
-            max: 0,
             d: '',
-            x: [],
-            y: [],
-            val: [],
+        }
+    },
+    updated() {
+        this.d = 'M' + this.x[1]*this.width +' '+ this.val[0]*this.height
+        for (var i=1; i<this.val.length; i++) {
+            this.d = this.d + ' ' + 'L' + this.x[i+1]*this.width +' '+ this.val[i]*this.height
+        }
+    },
+}
+const svg_template = {
+    components: {svg_content},
+    template:`
+        <svg_content :width=width :height=height
+                       :xTags=xTags :yTags=yTags
+                       :x=x :y=y :val=val
+                       :border=border :shows=shows></svg_content>
+    `,
+    props: {
+        shows: Array,
+        pl: Number, pr: Number, pt: Number, pd: Number,
+        xTags: Array, yTags: Array, vals: Array,
+        left: String,
+    },
+    data() {
+        return {
+            width: 400, height: 400,
+            x: [], y: [], val: [],
+            border: [],
         }
     },
     created() {
-        this.viewBox= '0 0 ' + this.width + ' ' + this.height
-        this.max = this.yTags[0]*2-this.yTags[1]
+        this.border.push(this.pl/this.width)
+        this.border.push(this.pr/this.width)
+        this.border.push(this.pt/this.height)
+        this.border.push(this.pd/this.height)
         for (var i=0; i<this.xTags.length; i++) {
-            this.x.push(i/this.xTags.length*(this.width-this.pl-this.pr)+this.pl)
-            if (i>=1) this.val.push((1-this.vals[i-1]/this.max)*this.height)
-          
-            if (i==1) {
-                this.d = 'M' + this.x[i] +' '+ this.val[i-1]
-            }
-            else if (i>1) {
-                this.d = this.d + ' ' + 'L' + this.x[i] +' '+ this.val[i-1]
+            var tmp = i/this.xTags.length*(this.width-this.pl-this.pr)+this.pl
+            this.x.push(tmp/this.width)
+            if (i>0) {
+              tmp = (1-this.vals[i-1]/this.yTags[0])*((this.height-this.pt-this.pd)*(1-1/this.yTags.length))+this.pt
+              this.val.push(tmp/this.height)
             }
         }
         for (var i=0; i<this.yTags.length; i++) {
-          this.y.push((i+1)/this.yTags.length*(this.height-this.pt-this.pd)+this.pt)
+            var tmp = i/this.yTags.length*(this.height-this.pt-this.pd)+this.pt
+            this.y.push(tmp/this.height)
         }
+    },
+    mounted() {
+        window.addEventListener('resize', this.onResize);
+        this.width = this.$el.clientWidth
+        this.height = this.$el.clientHeight
+    },
+    watch:{
+        left: function() {
+            setTimeout(()=>{this.onResize()}, 600);
+        }
+    },
+    methods: {
+        onResize() {
+            this.width = this.$el.clientWidth
+            this.height = this.$el.clientHeight
+        },
+    },
+    beforeDestroy() {
+        window.removeEventListener('resize', this.onResize);
     },
 }
 
-const svg1 = {
+const dashboard = {
     components: {svg_template},
     template:`
-        <svg_template :width=width :height=height :pl=pl :pr=pr :pt=pt :pd=pd
-                    :xTags=xTags :yTags=yTags :vals=vals :shows=shows></svg_template>
-    `,
-    data() {
-        return {
-            // x-axis x-label y-axis y-label bar circle path
-            shows: [true, true, true, true, true, false, false], 
-            width: 400,
-            height: 400,
-            pl: 40, pr:10, pt:10, pd:40,
-            xTags: ['','Ja','Fe','Ma','Ap','Mai','Ju','Jul','Au','Se','Oc','No','De'],
-            yTags: [800,600,400,200,0,],
-            vals: [542,443,320,780,553,453,326,434,568,610,756,895],
-        }
-    },
-}
-const svg2 = {components: {svg_template},
-    template:`
-        <svg_template :width=width :height=height :pl=pl :pr=pr :pt=pt :pd=pd
-                    :xTags=xTags :yTags=yTags :vals=vals :shows=shows></svg_template>
-    `,
-    data() {
-        return {
-            // x-axis x-label y-axis y-label bar circle path
-            shows: [true, true, true, true, false, true, true], 
-            width: 400,
-            height: 400,
-            pl: 40, pr:10, pt:10, pd:40,
-            xTags: ['','M','T','W','T','F','S','S'],
-            yTags: [40,30,20,10,0,],
-            vals: [12,17,7,17,23,18,38],
-        }
-    },
-}
-const svg3 = {components: {svg_template},
-    template:`
-        <svg_template :width=width :height=height :pl=pl :pr=pr :pt=pt :pd=pd
-                    :xTags=xTags :yTags=yTags :vals=vals :shows=shows></svg_template>
-    `,
-    data() {
-        return {
-            // x-axis x-label y-axis y-label bar circle path
-            shows: [true, true, true, true, false, true, true], 
-            width: 400,
-            height: 400,
-            pl: 40, pr:10, pt:10, pd:40,
-            xTags: ['','12am','3pm','6pm','9pm','12pm','3am','6am','9am'],
-            yTags: [800,600,400,200,0,],
-            vals: [230,750,450,300,280,240,200,190],
-        }
-    },
-}
-const dashboard = {
-    components: {svg1,svg2,svg3},
-    template:`
-        <section id="Dashboard" class="container">
+        <section id="Dashboard" class="container container--fluid">
             <div class="row">
-                <div class="col-lg-4 col-12">
+                <div class="col-lg-4 col-12" v-for="(svg) in SVGs">
                     <div class="card">
                         <div class="d-flex">
-                            <div class="card-head">
-                                <div class="ct-square">
-                                    <svg1 class="svg1"></svg1>
+                            <div class="card-head" :style="{'background-color':svg.bg}">
+                                <div class="ct-square" ref="square">
+                                    <svg_template :shows=svg.shows :pl=svg.pl :pr=svg.pr :pt=svg.pt :pd=svg.pd
+                                                  :xTags=svg.xTags :yTags=svg.yTags :vals=svg.vals :left=left></svg_template>
                                 </div>
                             </div>
                         </div>
@@ -319,50 +312,51 @@ const dashboard = {
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-4 col-12">
-                    <div class="card">
-                        <div class="d-flex">
-                            <div class="card-head">
-                                <div class="ct-square">
-                                    <svg2 class="svg2"></svg2>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <h4 class="card-title">Daily Sales</h4>
-                            <p>Last Campaign Performance</p>
-                        </div>
-                        <hr class="divider">
-                        <div class="action">
-                            <i class="mdi mdi-clock-outline"></i>
-                            <span>updated 10 minutes ago</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-12">
-                    <div class="card">
-                        <div class="d-flex">
-                            <div class="card-head">
-                                <div class="ct-square">
-                                    <svg3 class="svg3"></svg3>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <h4 class="card-title">Completed Tasks</h4>
-                            <p>Last Campaign Performance</p>
-                        </div>
-                        <hr class="divider">
-                        <div class="action">
-                            <i class="mdi mdi-clock-outline"></i>
-                            <span>updated 10 minutes ago</span>
-                        </div>
-                    </div>
-                </div>
                 
             </div>
         </section>
     `,
+    props: ['left'],
+    data() {
+        return {
+            SVGs: [
+                {
+                    bg: 'pink',
+                    // x-axis y-axis x-label y-label bar circle path
+                    shows: [true, true, true, true, true, false, false],
+                    pl: 40, pr:10, pt:10, pd:40,
+                    xTags: ['','Ja','Fe','Ma','Ap','Mai','Ju','Jul','Au','Se','Oc','No','De',],
+                    yTags: [1000,800,600,400,200,0],
+                    vals: [542,443,320,780,553,453,326,434,568,610,756,895],
+                },
+                {
+                    bg: 'bisque',
+                    // x-axis y-axis x-label y-label bar circle path
+                    shows: [true, true, true, true, false, true, true], 
+                    pl: 40, pr:10, pt:10, pd:40,
+                    xTags: ['','M','T','W','T','F','S','S'],
+                    yTags: [50,40,30,20,10,0],
+                    vals: [12,17,7,17,23,18,38],
+                },
+                {
+                    bg: 'burlywood',
+                    // x-axis y-axis x-label y-label bar circle path  
+                    shows: [true, true, true, true, false, true, true],
+                    pl: 40, pr:10, pt:10, pd:40,
+                    xTags: ['','12am','3pm','6pm','9pm','12pm','3am','6am','9am'],
+                    yTags: [1000,800,600,400,200,0],
+                    vals: [230,750,450,300,280,240,200,190],
+                },
+            ],
+        }
+    },
+    mounted() {
+        window.addEventListener('resize', this.onResize);
+        console.log(this.left)
+    },
+    beforeDestroy() {
+        window.removeEventListener('resize', this.onResize);
+    },
 }
 const userProfile = {
     template:`<section id="User Profile"></section>`,
@@ -395,7 +389,7 @@ const myMain = {
     },
     template:`
         <main>
-            <dashboard v-if="curPage==='Dashboard'"></dashboard>
+            <dashboard v-if="curPage==='Dashboard'" :left=left></dashboard>
             <user-profile v-else-if="curPage==='User Profile'"></user-profile>
             <regular-tables v-else-if="curPage==='Regular Tables'"></regular-tables>
             <typography v-else-if="curPage==='Typography'"></typography>
@@ -406,6 +400,7 @@ const myMain = {
     `,
     props: {
         curPage: String,
+        left: String,
     }
 }
 
@@ -446,9 +441,8 @@ const app = {
     },
     template:`
         <my-header :curPage=curPage :style="{'left':left}" @shift=shiftNav></my-header>
-
         <my-nav :curPage=curPage :transform=transform @change=changePage></my-nav>
-        <my-main :curPage=curPage :style="{'padding-left':left}"></my-main>
+        <my-main :curPage=curPage :left=left :style="{'padding-left':left}"></my-main>
         <my-footer :style="{'margin-left':left}"></my-footer>
     `,
     data() {
@@ -458,6 +452,9 @@ const app = {
             transform: "translateX(0%)",
             left: "260px",
         }
+    },
+    created() {
+        window.addEventListener('resize', this.onResize)
     },
     methods: {
         changePage(newPage) {this.curPage = newPage},
@@ -486,9 +483,6 @@ const app = {
         },
     },
     computed: {},
-    created() {
-        window.addEventListener('resize', this.onResize)
-    },
     destroyed() {
         window.removeEventListener("resize", this.onResize);
     },

@@ -6,6 +6,14 @@ main {
     box-sizing: inherit;
     transition: .5s;
 }
+.container {
+    padding: 12px;
+}
+.container--fluid {
+    max-width: 100%;
+    padding-left: 30px;
+    padding-right: 30px;
+}
 .card {
     margin: 30px 0;
     padding: 0 15px;
@@ -19,22 +27,8 @@ main {
     max-height: 185px;
     padding: 25px;
     position: relative;
-    background-color:rgb(208, 176, 222) ;
+    background-color:rgb(200, 200, 200);
     border-radius: 5px;
-}
-.ct-square {
-    width: 100%;
-    max-height: 150px;
-    position: relative;
-}
-.ct-square::before {
-    content: "";
-    max-height: 150px;
-    padding-bottom: 100%;
-    width: 0;
-    height: 0;
-    display: block;
-    float: none;
 }
 .card-body {
     padding: 15px 0 0 8px;
