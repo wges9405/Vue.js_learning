@@ -220,10 +220,13 @@ const svg_content = {
         }
     },
     updated() {
-        this.d = 'M' + this.x[1]*this.width +' '+ this.val[0]*this.height
-        for (var i=1; i<this.val.length; i++) {
-            this.d = this.d + ' ' + 'L' + this.x[i+1]*this.width +' '+ this.val[i]*this.height
+        if (this.shows[6]) {
+            this.d = 'M' + this.x[1]*this.width +' '+ this.val[0]*this.height
+            for (var i=1; i<this.val.length; i++) {
+                this.d = this.d + ' ' + 'L' + this.x[i+1]*this.width +' '+ this.val[i]*this.height
+            }
         }
+        
     },
 }
 const svg_template = {
@@ -272,7 +275,7 @@ const svg_template = {
     },
     watch:{
         left: function() {
-            setTimeout(()=>{this.onResize()}, 600);
+            setTimeout(()=>{this.onResize()}, 500);
         }
     },
     methods: {
@@ -289,9 +292,9 @@ const svg_template = {
 const dashboard = {
     components: {svg_template},
     template:`
-        <section id="Dashboard" class="container container--fluid">
+        <section id="Dashboard" class=" container-fluid">
             <div class="row">
-                <div class="col-lg-4 col-12" v-for="(svg) in SVGs">
+                <div class="col-12 col-lg-4" v-for="(svg) in SVGs">
                     <div class="card">
                         <div class="d-flex">
                             <div class="card-head" :style="{'background-color':svg.bg}">
@@ -312,7 +315,26 @@ const dashboard = {
                         </div>
                     </div>
                 </div>
-                
+            </div>
+            <div class="row">
+                <div class="col-sm-6 col-lg-3 col-12" v-for="(h) in smHeaders">
+                    <div class="card">
+                        <div class="d-flex flex-wrap" style="align-items: center;">
+                            <div class="d-flex card-head sm" :style="{'background':h.header[1]}">
+                                <i class="mdi" :class=h.header[0] style="font-size:32px;color:white;"></i>
+                            </div>
+                            <div class="ms-auto" style="text-align:right;">
+                                <div style="font-size:13px;color:gray">{{ h.subtitle[0] }}</div>
+                                <h4>{{ h.subtitle[1] }}</h4>
+                            </div>
+                        </div>
+                        <hr class="divider">
+                        <div class="action">
+                            <i class="mdi" :class=h.action[0]></i>
+                            <span>{{ h.action[1] }}</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
     `,
@@ -328,8 +350,7 @@ const dashboard = {
                     xTags: ['','Ja','Fe','Ma','Ap','Mai','Ju','Jul','Au','Se','Oc','No','De',],
                     yTags: [1000,800,600,400,200,0],
                     vals: [542,443,320,780,553,453,326,434,568,610,756,895],
-                },
-                {
+                },{
                     bg: 'bisque',
                     // x-axis y-axis x-label y-label bar circle path
                     shows: [true, true, true, true, false, true, true], 
@@ -337,8 +358,7 @@ const dashboard = {
                     xTags: ['','M','T','W','T','F','S','S'],
                     yTags: [50,40,30,20,10,0],
                     vals: [12,17,7,17,23,18,38],
-                },
-                {
+                },{
                     bg: 'burlywood',
                     // x-axis y-axis x-label y-label bar circle path  
                     shows: [true, true, true, true, false, true, true],
@@ -347,6 +367,25 @@ const dashboard = {
                     yTags: [1000,800,600,400,200,0],
                     vals: [230,750,450,300,280,240,200,190],
                 },
+            ],
+            smHeaders: [
+                {
+                    header: ["mdi-twitter", "cadetblue"],
+                    subtitle: ["Followers","+243"],
+                    action: ["mdi-clock","updated 10 minutes ago"],
+                }, {
+                    header: ["mdi-poll", "cornflowerblue"],
+                    subtitle: ["Website Visits","75.521"],
+                    action: ["mdi-tag","Tracked from Google Analytics"],
+                }, {
+                    header: ["mdi-store", "turquoise"],
+                    subtitle: ["Revenue","$34,245"],
+                    action: ["mdi-calendar","Last 24 Hours"],
+                }, {
+                    header: ["mdi-sofa", "thistle"],
+                    subtitle: ["Bookings","184"],
+                    action: ["mdi-alert","Get More Space..."],
+                }
             ],
         }
     },
@@ -389,6 +428,8 @@ const myMain = {
     },
     template:`
         <main>
+            <dashboard></dashboard>
+
             <dashboard v-if="curPage==='Dashboard'" :left=left></dashboard>
             <user-profile v-else-if="curPage==='User Profile'"></user-profile>
             <regular-tables v-else-if="curPage==='Regular Tables'"></regular-tables>
@@ -403,6 +444,7 @@ const myMain = {
         left: String,
     }
 }
+Vue.createApp(myMain).mount('#app')
 
 const myFooter = {
     template:`
@@ -488,4 +530,4 @@ const app = {
     },
 }
 
-Vue.createApp(app).mount('#app')
+// Vue.createApp(app).mount('#app')
