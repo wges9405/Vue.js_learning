@@ -238,7 +238,7 @@ const svg_template = {
                        :border=border :shows=shows></svg_content>
     `,
     props: {
-        shows: Array,
+        shows: Array, // x-axis y-axis x-label y-label bar circle path
         pl: Number, pr: Number, pt: Number, pd: Number,
         xTags: Array, yTags: Array, vals: Array,
         left: String,
@@ -294,34 +294,36 @@ const dashboard = {
     template:`
         <section id="Dashboard" class=" container-fluid">
             <div class="row">
-                <div class="col-12 col-lg-4" v-for="(svg) in SVGs">
+                <div class="col-12 col-lg-4" v-for="content in row[0]">
                     <div class="card">
-                        <div class="d-flex">
-                            <div class="card-head" :style="{'background-color':svg.bg}">
-                                <div class="ct-square" ref="square">
-                                    <svg_template :shows=svg.shows :pl=svg.pl :pr=svg.pr :pt=svg.pt :pd=svg.pd
-                                                  :xTags=svg.xTags :yTags=svg.yTags :vals=svg.vals :left=left></svg_template>
-                                </div>
+                        <div class="card-head" :style="{'background-color':content.header}">
+                            <div class="ct-square" ref="square">
+                                <svg_template :shows=content.shows :pl=content.pl :pr=content.pr :pt=content.pt :pd=content.pd
+                                                :xTags=content.xTags :yTags=content.yTags :vals=content.vals :left=left></svg_template>
                             </div>
                         </div>
                         <div class="card-body">
-                            <h4 class="card-title">Websit Views</h4>
-                            <p>Last Campaign Performance</p>
+                            <h4 class="card-title">{{ content.subtitle[0] }}</h4>
+                            <p>
+                                <i v-if="content.subtitle[0]==='Daily Sales'" class="mdi" :class="[content.subtitle[2]>0?'good mdi-arrow-up':'bad mdi-arrow-down']"></i>
+                                <span v-if="content.subtitle[0]==='Daily Sales'" :class="[content.subtitle[2]>0?'good':'bad']" >{{ content.subtitle[2] }}%</span>
+                                {{ content.subtitle[1] }}
+                            </p>
                         </div>
                         <hr class="divider">
                         <div class="action">
                             <i class="mdi mdi-clock-outline"></i>
-                            <span>updated 10 minutes ago</span>
+                            <span>{{ content.action }}</span>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="row">
-                <div class="col-sm-6 col-lg-3 col-12" v-for="(h) in smHeaders">
+                <div class="col-12 col-sm-6 col-lg-3" v-for="h in row[1]">
                     <div class="card">
                         <div class="d-flex flex-wrap" style="align-items: center;">
-                            <div class="d-flex card-head sm" :style="{'background':h.header[1]}">
-                                <i class="mdi" :class=h.header[0] style="font-size:32px;color:white;"></i>
+                            <div class="d-flex card-head sm" :style="{'background':h.header[0]}">
+                                <i class="mdi" :class=h.header[1] style="font-size:32px;color:white;"></i>
                             </div>
                             <div class="ms-auto" style="text-align:right;">
                                 <div style="font-size:13px;color:gray">{{ h.subtitle[0] }}</div>
@@ -336,57 +338,160 @@ const dashboard = {
                     </div>
                 </div>
             </div>
+            <div class="row">
+                <div class="col-12 col-md-6">
+                    <div class="card">
+                        <div class="card-head" :style="{'background':table.header[0]}">
+                            <h5>{{ table.header[1] }}</h5>
+                            <p>{{ table.header[2] }}</p>
+                        </div>
+                        <div class="card-body">
+                            <div class="table">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th v-for="c in Array(5).keys()" :style="{'text-align':(c>1?'right':'left')}">{{ table.head[c] }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="i in Array(table.rpp).keys()">
+                                            <td v-for="j in Array(5).keys()" :style="{'text-align':(j>1?'right':'left')}">
+                                                <template v-if="table.page*table.rpp+i<table.content.length">
+                                                    <span v-if="j==2">$</span>
+                                                    <span v-if="j==2">{{ table.content[table.page*table.rpp+i][j].toLocaleString('en-US') }}</span>
+                                                    <span v-else>{{ table.content[table.page*table.rpp+i][j] }}</span>
+                                                </template>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="d-flex table-footer" style="">
+                                <div class="d-flex" style="align-items:center;margin-right:15px;">
+                                    <span>Rows per page:</span>
+                                    <div class="d-flex" style="cursor:pointer;border-bottom:thin solid #5a5a5a;margin:15px 0 15px 30px;" ref="selector" @click="showSelection()">
+                                        <div>{{ table.rpp }}</div>
+                                        <div>
+                                            <i class="mdi mdi-menu-down"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="margin:0 32px 0 24px">{{ table.page*table.rpp+1 }}-{{ Math.min((table.page+1)*table.rpp, table.content.length) }} of {{ table.content.length }}</div>
+                                <div >
+                                    <button style="height:41px;width:41px;" @click="prevPage()">
+                                            <i class="mdi mdi-chevron-left"></i>
+                                    </button>
+                                </div>
+                                <div >
+                                    <button style="height:41px;width:41px;" @click="nextPage()">
+                                            <i class="mdi mdi-chevron-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div v-show=menu[2] class="rpp-select-menu" :style="{left:menu[0]+ 'px', top:(Math.min(menu[1]+scrollX,maxheight+scrollX)-320)+ 'px'}">
+            ASDDDD
+            </div>
         </section>
     `,
     props: ['left'],
     data() {
         return {
-            SVGs: [
-                {
-                    bg: 'pink',
-                    // x-axis y-axis x-label y-label bar circle path
-                    shows: [true, true, true, true, true, false, false],
-                    pl: 40, pr:10, pt:10, pd:40,
-                    xTags: ['','Ja','Fe','Ma','Ap','Mai','Ju','Jul','Au','Se','Oc','No','De',],
-                    yTags: [1000,800,600,400,200,0],
-                    vals: [542,443,320,780,553,453,326,434,568,610,756,895],
-                },{
-                    bg: 'bisque',
-                    // x-axis y-axis x-label y-label bar circle path
-                    shows: [true, true, true, true, false, true, true], 
-                    pl: 40, pr:10, pt:10, pd:40,
-                    xTags: ['','M','T','W','T','F','S','S'],
-                    yTags: [50,40,30,20,10,0],
-                    vals: [12,17,7,17,23,18,38],
-                },{
-                    bg: 'burlywood',
-                    // x-axis y-axis x-label y-label bar circle path  
-                    shows: [true, true, true, true, false, true, true],
-                    pl: 40, pr:10, pt:10, pd:40,
-                    xTags: ['','12am','3pm','6pm','9pm','12pm','3am','6am','9am'],
-                    yTags: [1000,800,600,400,200,0],
-                    vals: [230,750,450,300,280,240,200,190],
-                },
+            row: [
+                [
+                    {
+                        shows: [true, true, true, true, true, false, false], // x-axis y-axis x-label y-label bar circle path
+                        pl: 40, pr:10, pt:10, pd:40,
+                        xTags: ["","Ja","Fe","Ma","Ap","Mai","Ju","Jul","Au","Se","Oc","No","De"],
+                        yTags: [1000,800,600,400,200,0],
+                        vals: [542,443,320,780,553,453,326,434,568,610,756,895],
+                        /* ------------------------------------------------------------ */
+                        header: "pink",
+                        subtitle: ["Website Views", "Last Campaign Performance"],
+                        action: "updated 10 minutes ago",
+                    },{
+                        shows: [true, true, true, true, false, true, true],  // x-axis y-axis x-label y-label bar circle path
+                        pl: 40, pr:10, pt:10, pd:40,
+                        xTags: ["","M","T","W","T","F","S","S"],
+                        yTags: [50,40,30,20,10,0],
+                        vals: [12,17,7,17,23,18,38],
+                        /* ------------------------------------------------------------ */
+                        header: "bisque",
+                        subtitle: ["Daily Sales", "increase in today's sales", 55],
+                        action: "updated 4 minutes ago",
+                    },{
+                        shows: [true, true, true, true, false, true, true], // x-axis y-axis x-label y-label bar circle path
+                        pl: 40, pr:10, pt:10, pd:40,
+                        xTags: ["","12am","3pm","6pm","9pm","12pm","3am","6am","9am"],
+                        yTags: [1000,800,600,400,200,0],
+                        vals: [230,750,450,300,280,240,200,190],
+                        /* ------------------------------------------------------------ */
+                        header: "burlywood",
+                        subtitle: ["Completed Tasks", "Last Last Campaign Performance"],
+                        action: "campaign sent 26 minutes ago",
+                    }
+                ],
+                [
+                    {
+                        header:["cadetblue", "mdi-twitter"],
+                        subtitle: ["Followers","+243"],
+                        action: ["mdi-clock","updated 10 minutes ago"],
+                    }, {
+                        header: ["cornflowerblue", "mdi-poll"],
+                        subtitle: ["Website Visits","75.521"],
+                        action: ["mdi-tag","Tracked from Google Analytics"],
+                    }, {
+                        header: ["turquoise", "mdi-store"],
+                        subtitle: ["Revenue","$34,245"],
+                        action: ["mdi-calendar","Last 24 Hours"],
+                    }, {
+                        header: ["thistle", "mdi-sofa"],
+                        subtitle: ["Bookings","184"],
+                        action: ["mdi-alert","Get More Space..."],
+                    }
+                ],
             ],
-            smHeaders: [
-                {
-                    header: ["mdi-twitter", "cadetblue"],
-                    subtitle: ["Followers","+243"],
-                    action: ["mdi-clock","updated 10 minutes ago"],
-                }, {
-                    header: ["mdi-poll", "cornflowerblue"],
-                    subtitle: ["Website Visits","75.521"],
-                    action: ["mdi-tag","Tracked from Google Analytics"],
-                }, {
-                    header: ["mdi-store", "turquoise"],
-                    subtitle: ["Revenue","$34,245"],
-                    action: ["mdi-calendar","Last 24 Hours"],
-                }, {
-                    header: ["mdi-sofa", "thistle"],
-                    subtitle: ["Bookings","184"],
-                    action: ["mdi-alert","Get More Space..."],
-                }
-            ],
+            table: {
+                header: ["darkorange", "Employees Stats", "New employees on 15th September, 2016"],
+                head: ["ID", "Name", "Salary", "Country", "City"],
+                content: [
+                    ["1", "Dakota Rice", 35738, "Niger", "Oud-Tunrhout"],
+                    ["2", "Minerva Hooper", 23738, "Curaçao", "Sinaai-Waas"],
+                    ["3", "Sage Rodriguez", 56142, "Netherlands", "Overland Park"],
+                    ["4", "Philip Chanley", 38735, "Korea, South", "Gloucester"],
+                    ["5", "Doris Greene", 63542, "Malawi", "Feldkirchen in Kārnten"],
+                    ["6", "Doris Greene", 63542, "Malawi", "Feldkirchen in Kārnten"],
+                    ["7", "Doris Greene", 63542, "Malawi", "Feldkirchen in Kārnten"],
+                    ["8", "Doris Greene", 63542, "Malawi", "Feldkirchen in Kārnten"],
+                    ["9", "Doris Greene", 63542, "Malawi", "Feldkirchen in Kārnten"],
+                    ["10", "Doris Greene", 63542, "Malawi", "Feldkirchen in Kārnten"],
+                    ["11", "Doris Greene", 63542, "Malawi", "Feldkirchen in Kārnten"],
+                ],
+                page:0,
+                rpp:5, // rows per page
+            },
+            menu: [0,0, false],
+            scrollX: 0,
+            maxheight: 0,
+        }
+    },
+    methods: {
+        showSelection() {
+            this.menu[0] = this.$refs.selector.getBoundingClientRect().left
+            this.menu[1] = this.$refs.selector.getBoundingClientRect().top
+            this.menu[2] = !this.menu[2]
+            this.scrollX = document.documentElement.scrollTop
+            this.maxheight = this.$refs.selector.getBoundingClientRect().top
+        },
+        prevPage() {if (this.table.page>0) this.table.page--},
+        nextPage() {if ((this.table.page+1)*this.table.rpp<this.table.content.length) this.table.page++},
+        onResize() {
+            this.menu[0] = this.$refs.selector.getBoundingClientRect().left
+            this.scrollX = document.documentElement.scrollTop
+            this.maxheight = this.$refs.selector.getBoundingClientRect().top
         }
     },
     mounted() {

@@ -62,3 +62,53 @@ main {
     font-size: 16px;
     margin-right: 4px;
 }
+
+.good {
+    color:#4caf50;
+}
+.bad {
+    color: darkred;
+}
+
+.table {
+    margin-bottom: 0;
+    padding: 0 10px;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+table {
+    width: 100%;
+}
+th, td{
+    height: 48px;
+    border-bottom: thin solid rgb(216, 216, 216);
+    color: rgb(90, 90, 90);
+    text-align: end;
+}
+th {
+    padding: 0 8px;
+    font-size: 16px;
+}
+td {
+    padding: 0 16px;
+    font-size: 14px;
+}
+.table-footer {
+    justify-content:flex-end;
+    align-items:center;
+    font-size:14px;
+    color:#5a5a5a;
+    
+}
+
+.rpp-select-menu{
+    max-height: 304px;
+    min-width: 39px;
+    z-index: 8;
+    background-color: #888;
+    height: 100%;
+    width: auto;
+
+    position: absolute;
+    display: inline-block;
+}
