@@ -103,12 +103,35 @@ td {
 
 .rpp-select-menu{
     max-height: 304px;
-    min-width: 39px;
+    min-width: 45px;
     z-index: 8;
-    background-color: #888;
-    height: 100%;
+    background-color: #fff;
     width: auto;
 
     position: absolute;
     display: inline-block;
+    border-radius: 5px;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+    transition: .3s;
+
+    box-shadow: 0 5px 5px -3px rgb(0 0 0 / 20%), 0 8px 10px 1px rgb(0 0 0 / 14%), 0 3px 14px 2px rgb(0 0 0 / 12%);
+}
+.rpp-select-menu .rpp-list {
+    padding: 5px 0;
+}
+.rpp-select-menu .rpp-list .rpp-select-btn{
+    display: flex;
+    height: 45px;
+    align-items: center;
+    justify-content: center;
+    transition: .3s;
+}
+.rpp-select-menu .rpp-list .rpp-select-btn:hover{
+    background-color: rgba(0, 0, 0, 0.05);
+}
+.rpp-select-btn.selected {
+    color:#349137;
+    background-color:rgba(0, 128, 0, 0.1);
 }

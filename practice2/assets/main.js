@@ -355,12 +355,11 @@ const dashboard = {
                                     </thead>
                                     <tbody>
                                         <tr v-for="i in Array(table.rpp).keys()">
-                                            <td v-for="j in Array(5).keys()" :style="{'text-align':(j>1?'right':'left')}">
-                                                <template v-if="table.page*table.rpp+i<table.content.length">
-                                                    <span v-if="j==2">$</span>
-                                                    <span v-if="j==2">{{ table.content[table.page*table.rpp+i][j].toLocaleString('en-US') }}</span>
-                                                    <span v-else>{{ table.content[table.page*table.rpp+i][j] }}</span>
-                                                </template>
+                                            <td v-if="table.page*table.rpp+i<table.content.length"
+                                                v-for="j in Array(5).keys()" :style="{'text-align':(j>1?'right':'left')}">
+                                                <span v-if="j==2">$</span>
+                                                <span v-if="j==2">{{ table.content[table.page*table.rpp+i][j].toLocaleString('en-US') }}</span>
+                                                <span v-else>{{ table.content[table.page*table.rpp+i][j] }}</span>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -369,8 +368,9 @@ const dashboard = {
                             <div class="d-flex table-footer" style="">
                                 <div class="d-flex" style="align-items:center;margin-right:15px;">
                                     <span>Rows per page:</span>
-                                    <div class="d-flex" style="cursor:pointer;border-bottom:thin solid #5a5a5a;margin:15px 0 15px 30px;" ref="selector" @click="showSelection()">
-                                        <div>{{ table.rpp }}</div>
+                                    <div class="d-flex" style="cursor:pointer;border-bottom:thin solid #5a5a5a;margin:15px 0 15px 30px;" ref="selector" @click.stop="showSelection()">
+                                        <div v-if="table.rpp!=table.content.length">{{ table.rpp }}</div>
+                                        <div v-else>All</div>
                                         <div>
                                             <i class="mdi mdi-menu-down"></i>
                                         </div>
@@ -392,8 +392,13 @@ const dashboard = {
                     </div>
                 </div>
             </div>
-            <div v-show=menu[2] class="rpp-select-menu" :style="{left:menu[0]+ 'px', top:(Math.min(menu[1]+scrollX,maxheight+scrollX)-320)+ 'px'}">
-            ASDDDD
+            <div v-show=menu[2] class="rpp-select-menu" :style="{left:menu[0]+ 'px', top:(Math.min(menu[1]+scrollX,maxheight+scrollX)-150)+ 'px'}">
+                <div class="rpp-list">
+                    <div id="rpp5" @click="select(5)" class="rpp-select-btn selected">5</div>
+                    <div id="rpp10" @click="select(10)" class="rpp-select-btn">10</div>
+                    <div id="rpp15" @click="select(15)" class="rpp-select-btn">15</div>
+                    <div id="rppAll" @click="select(table.content.length)" class="rpp-select-btn">All</div>
+                </div>
             </div>
         </section>
     `,
@@ -480,23 +485,42 @@ const dashboard = {
     },
     methods: {
         showSelection() {
-            this.menu[0] = this.$refs.selector.getBoundingClientRect().left
-            this.menu[1] = this.$refs.selector.getBoundingClientRect().top
-            this.menu[2] = !this.menu[2]
-            this.scrollX = document.documentElement.scrollTop
-            this.maxheight = this.$refs.selector.getBoundingClientRect().top
+            this.menu[0] = this.$refs.selector.getBoundingClientRect().left;
+            this.menu[1] = this.$refs.selector.getBoundingClientRect().top;
+            this.menu[2] = !this.menu[2];
+            this.scrollX = document.documentElement.scrollTop;
+            this.maxheight = this.$refs.selector.getBoundingClientRect().top;
         },
-        prevPage() {if (this.table.page>0) this.table.page--},
-        nextPage() {if ((this.table.page+1)*this.table.rpp<this.table.content.length) this.table.page++},
+        prevPage() {if (this.table.page>0) this.table.page--;},
+        nextPage() {if ((this.table.page+1)*this.table.rpp<this.table.content.length) this.table.page++;},
+        select(rpp) {
+            this.table.rpp = rpp
+            this.menu[2] = false
+            document.getElementById('rpp5').className = "rpp-select-btn";
+            document.getElementById('rpp10').className = "rpp-select-btn";
+            document.getElementById('rpp15').className = "rpp-select-btn";
+            document.getElementById('rppAll').className = "rpp-select-btn";
+            console.log(this.table.rpp)
+            switch(this.table.rpp) {
+                case 5: document.getElementById('rpp5').className = "rpp-select-btn selected"; break;
+                case 10:document.getElementById('rpp10').className = "rpp-select-btn selected"; break;
+                case 15:document.getElementById('rpp15').className = "rpp-select-btn selected"; break;
+                default:document.getElementById('rppAll').className = "rpp-select-btn selected"; break;
+            }
+        },
         onResize() {
-            this.menu[0] = this.$refs.selector.getBoundingClientRect().left
-            this.scrollX = document.documentElement.scrollTop
-            this.maxheight = this.$refs.selector.getBoundingClientRect().top
-        }
+            this.menu[0] = this.$refs.selector.getBoundingClientRect().left;
+            this.scrollX = document.documentElement.scrollTop;
+            this.maxheight = this.$refs.selector.getBoundingClientRect().top;
+        },
+    },
+    watch:{
     },
     mounted() {
-        window.addEventListener('resize', this.onResize);
-        console.log(this.left)
+        var that = this;
+        window.addEventListener('resize', that.onResize);
+        console.log(that.left);
+        document.addEventListener('click', ()=>{that.menu[2] = false;});
     },
     beforeDestroy() {
         window.removeEventListener('resize', this.onResize);
