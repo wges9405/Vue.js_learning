@@ -341,9 +341,9 @@ const dashboard = {
             <div class="row">
                 <div class="col-12 col-md-6">
                     <div class="card">
-                        <div class="card-head" :style="{'background':table.header[0]}">
-                            <h5>{{ table.header[1] }}</h5>
-                            <p>{{ table.header[2] }}</p>
+                        <div class="card-head" :style="{'background':table.header[0]}" style="color:white">
+                            <div style="font-size:20px;padding-bottom:5px">{{ table.header[1] }}</div>
+                            <div style="font-size:14px">{{ table.header[2] }}</div>
                         </div>
                         <div class="card-body">
                             <div class="table">
@@ -389,6 +389,34 @@ const dashboard = {
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6">
+                    <div class="card">
+                        <div class="card-head" :style="{'background':task.header[0]}" style="color:white">
+                            <div class="d-flex">
+                                <div class="task-list">
+                                    <div class="task-tab" :style="{width:task.tab[0]+'px',left:task.tab[1]+'px'}">
+                                        <div style="background-color:white;height:100%;width:100%"></div>
+                                    </div>
+                                    <!---->
+                                    <span style="align-self:center;margin:0 10px;">Tasks:</span>
+                                    <div id="bugs" class="task-header ripple3" :class="[curTask=='bugs'?'active':'']" @click="changeTask($event)">
+                                        <i class="mdi mdi-bug"></i>
+                                        <span style="text-transform:uppercase">bugs</span>
+                                    </div>
+                                    <div id="website" class="task-header ripple3" :class="[curTask=='website'?'active':'']" @click="changeTask($event)">
+                                        <i class="mdi mdi-code-tags"></i>
+                                        <span style="text-transform:uppercase">website</span>
+                                    </div>
+                                    <div id="server" class="task-header ripple3" :class="[curTask=='server'?'active':'']" @click="changeTask($event)">
+                                        <i class="mdi mdi-cloud"></i>
+                                        <span style="text-transform:uppercase">server</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body"></div>
                     </div>
                 </div>
             </div>
@@ -481,6 +509,11 @@ const dashboard = {
             menu: [0,0, false],
             scrollX: 0,
             maxheight: 0,
+            task: {
+                header: ["darkgreen"],
+                tab: [],
+            },
+            curTask: "bugs",
         }
     },
     methods: {
@@ -508,6 +541,12 @@ const dashboard = {
                 default:document.getElementById('rppAll').className = "rpp-select-btn selected"; break;
             }
         },
+        changeTask(event) {
+            var task = event.currentTarget;
+            this.curTask = task.id;
+            this.task.tab[0] = task.offsetWidth;
+            this.task.tab[1] = task.offsetLeft;
+        },
         onResize() {
             this.menu[0] = this.$refs.selector.getBoundingClientRect().left;
             this.scrollX = document.documentElement.scrollTop;
@@ -521,6 +560,9 @@ const dashboard = {
         window.addEventListener('resize', that.onResize);
         console.log(that.left);
         document.addEventListener('click', ()=>{that.menu[2] = false;});
+        
+        this.task.tab[0] = document.getElementById(this.curTask).offsetWidth;
+        this.task.tab[1] = document.getElementById(this.curTask).offsetLeft;
     },
     beforeDestroy() {
         window.removeEventListener('resize', this.onResize);
