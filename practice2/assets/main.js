@@ -35,7 +35,7 @@ const myNav = {
     `,
     emits: ["change"],
     methods: {
-        changePage(newPage) {this.$emit('change', newPage)},
+        changePage(newPage) {this.$emit('change', newPage);},
     },
     props: {
         curPage: String,
@@ -104,40 +104,42 @@ const myHeader = {
             <div class="toolbar">
                 <div class="nav-shift">
                     <button class="tool btn-nav-shift" @click="shiftNav()">
-                        <i class="mdi mdi-dots-vertical"></i>
+                        <i class="mdi icon mdi-dots-vertical"></i>
                     </button>
                 </div>
                 <div style="color: #505050;">{{ curPage }}</div>
                 <div style="flex-grow:1"></div>
                 <!---->
                 <div class="search-bar">
-                    <div style="display:flex;box-sizing: inherit;">
+                    <div style="display:flex;position:relative">
                         <input id="input-search" type="text" class="search-input" placeholder="A">
                         <label class="search-label">Search</label>
+                        <div class="search-ripple"></div>
                     </div>
                     <div>
                         <button class="tool">
-                            <i class="mdi mdi-magnify"></i>
+                            <i class="mdi icon mdi-magnify"></i>
                         </button>
                     </div>
                 </div>
                 <div style="width:12px"></div>
                 <!---->
-                <a class="list list-icon tool-btn" href="" @click.prevent="">
-                    <i class="mdi mdi-view-dashboard"></i>
+                <a class="list list-icon tool-btn ripple" href="" :class="[curPage=='Dashboard'?'active':'']" @click.prevent="changePage('Dashboard')">
+                    <i class="mdi icon mdi-view-dashboard"></i>
                 </a>
-                <button  class="list list-icon tool-btn">
-                    <i class="mdi mdi-bell" style="color: #000;"></i>
+                <button  class="list list-icon tool-btn ripple bell">
+                    <i class="mdi icon mdi-bell" style="color: #000;"></i>
                 </button>
-                <a  class="list list-icon tool-btn" href="" @click.prevent="">
-                    <i class="mdi mdi-account"></i>
+                <a  class="list list-icon tool-btn ripple" href="" :class="[curPage=='User Profile'?'active':'']" @click.prevent="changePage('User Profile')">
+                    <i class="mdi icon mdi-account"></i>
                 </a>
             </div>
         </header>
     `,
-    emits: ["shift"],
+    emits: ["shift","change"],
     methods: {
-        shiftNav() {this.$emit('shift')},
+        shiftNav() {this.$emit('shift');},
+        changePage(newPage) {this.$emit('change', newPage);},
     },
     props: {
         curPage: String,
@@ -177,7 +179,7 @@ const svg_content = {
                 <foreignObject v-for="(tag, index) in xTags"
                                :x=(x[index]-x[0]/2)*width :y=y[y.length-1]*height
                                :width=x[0]*width :height=border[3]*height>
-                    <span> {{ tag }} </span>
+                    <span > {{ tag }} </span>
                 </foreignObject>
             </g>
             <!-- y tags -->
@@ -305,14 +307,14 @@ const dashboard = {
                         <div class="card-body">
                             <h4 class="card-title">{{ content.subtitle[0] }}</h4>
                             <p>
-                                <i v-if="content.subtitle[0]==='Daily Sales'" class="mdi" :class="[content.subtitle[2]>0?'good mdi-arrow-up':'bad mdi-arrow-down']"></i>
+                                <i v-if="content.subtitle[0]==='Daily Sales'" class="mdi icon" :class="[content.subtitle[2]>0?'good mdi-arrow-up':'bad mdi-arrow-down']"></i>
                                 <span v-if="content.subtitle[0]==='Daily Sales'" :class="[content.subtitle[2]>0?'good':'bad']" >{{ content.subtitle[2] }}%</span>
                                 {{ content.subtitle[1] }}
                             </p>
                         </div>
                         <hr class="divider">
                         <div class="action">
-                            <i class="mdi mdi-clock-outline"></i>
+                            <i class="mdi mdi-clock-outline icon"></i>
                             <span>{{ content.action }}</span>
                         </div>
                     </div>
@@ -323,7 +325,7 @@ const dashboard = {
                     <div class="card">
                         <div class="d-flex flex-wrap" style="align-items: center;">
                             <div class="d-flex card-head sm" :style="{'background':h.header[0]}">
-                                <i class="mdi" :class=h.header[1] style="font-size:32px;color:white;"></i>
+                                <i class="mdi icon" :class=h.header[1] style="font-size:32px;color:white;"></i>
                             </div>
                             <div class="ms-auto" style="text-align:right;">
                                 <div style="font-size:13px;color:gray">{{ h.subtitle[0] }}</div>
@@ -332,7 +334,7 @@ const dashboard = {
                         </div>
                         <hr class="divider">
                         <div class="action">
-                            <i class="mdi" :class=h.action[0]></i>
+                            <i class="mdi icon" :class=h.action[0]></i>
                             <span>{{ h.action[1] }}</span>
                         </div>
                     </div>
@@ -372,19 +374,19 @@ const dashboard = {
                                         <div v-if="table.rpp!=table.content.length">{{ table.rpp }}</div>
                                         <div v-else>All</div>
                                         <div>
-                                            <i class="mdi mdi-menu-down"></i>
+                                            <i class="mdi icon mdi-menu-down"></i>
                                         </div>
                                     </div>
                                 </div>
                                 <div style="margin:0 32px 0 24px">{{ table.page*table.rpp+1 }}-{{ Math.min((table.page+1)*table.rpp, table.content.length) }} of {{ table.content.length }}</div>
                                 <div >
                                     <button style="height:41px;width:41px;" @click="prevPage()">
-                                            <i class="mdi mdi-chevron-left"></i>
+                                            <i class="mdi icon mdi-chevron-left"></i>
                                     </button>
                                 </div>
                                 <div >
                                     <button style="height:41px;width:41px;" @click="nextPage()">
-                                            <i class="mdi mdi-chevron-right"></i>
+                                            <i class="mdi icon mdi-chevron-right"></i>
                                     </button>
                                 </div>
                             </div>
@@ -395,28 +397,42 @@ const dashboard = {
                     <div class="card">
                         <div class="card-head" :style="{'background':task.header[0]}" style="color:white">
                             <div class="d-flex">
-                                <div class="task-list">
-                                    <div class="task-tab" :style="{width:task.tab[0]+'px',left:task.tab[1]+'px'}">
-                                        <div style="background-color:white;height:100%;width:100%"></div>
-                                    </div>
-                                    <!---->
-                                    <span style="align-self:center;margin:0 10px;">Tasks:</span>
-                                    <div id="bugs" class="task-header ripple3" :class="[curTask=='bugs'?'active':'']" @click="changeTask($event)">
-                                        <i class="mdi mdi-bug"></i>
-                                        <span style="text-transform:uppercase">bugs</span>
-                                    </div>
-                                    <div id="website" class="task-header ripple3" :class="[curTask=='website'?'active':'']" @click="changeTask($event)">
-                                        <i class="mdi mdi-code-tags"></i>
-                                        <span style="text-transform:uppercase">website</span>
-                                    </div>
-                                    <div id="server" class="task-header ripple3" :class="[curTask=='server'?'active':'']" @click="changeTask($event)">
-                                        <i class="mdi mdi-cloud"></i>
-                                        <span style="text-transform:uppercase">server</span>
+                                <div class="task-list" id="task-list">
+                                    <div class="d-flex" :style="{transform:(task.tab[0]+task.tab[1]>task.tab[2] ?'translateX('+ (-task.tab[1]+50) +'px)':'translateX(0px)')}">
+                                        <div class="task-tab" :style="{width:task.tab[0]+'px',left:task.tab[1]+'px'}">
+                                            <div style="background-color:white;height:100%;width:100%"></div>
+                                        </div>
+                                        <!---->
+                                        <span style="align-self:center;margin:0 10px;">Tasks:</span>
+                                        <div class="task-header ripple3" @click="changeTask($event)"
+                                            v-for="t in task.tasks" :id=t[0] :class="[curTask==t[0]?'active':'']">
+                                            <i class="mdi icon" :class="t[1]"></i>
+                                            <span style="text-transform:uppercase">{{ t[0] }}</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="card-body"></div>
+                        <div class="card-body">
+                            <div class="d-flex">
+                                <div class="task-content" v-for="t in task.tasks" v-show="curTask==t[0]?true:false">
+                                    <div class="row" v-for="(content, idx) in t[2]" style="align-items:center;width:100%;margin:auto;margin-bottom:20px"> 
+                                        <div class="col col-1">
+                                            <div class="task-checkbox" @click="check($event)" ref="idx" :id=idx>
+                                                <i class="mdi mdi-checkbox-blank-outline unchecked"></i>
+                                                <input type="checkbox">
+                                                <div class="selection-area unchecked"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col col-9">{{ content }}</div>
+                                        <div class="col col-2" style="text-align:right;">
+                                            <i class="mdi icon mdi-pencil" style="color:rgba(0,0,0,0.54)"></i>
+                                            <i class="mdi icon mdi-close" style="color:red"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -511,7 +527,37 @@ const dashboard = {
             maxheight: 0,
             task: {
                 header: ["darkgreen"],
-                tab: [],
+                tab: [0,0,0],
+                tasks: [
+                    [
+                        "bugs",
+                        "mdi-bug",
+                        [
+                            "Sign contract for 'What are conference organizers afraid of?'",
+                            "Lines From Great Russian Literature? Or E-mails From My Boss?",
+                            "Flooded: One year later, assessing what was lost and what was found when a ravaging rain swept through metro Detroit",
+                            "Create 4 Invisible User Experiences you Never Knew About",
+                        ],
+                    ],
+                    [
+                        "website",
+                        "mdi-code-tags",
+                        [
+                            "Flooded: One year later, assessing what was lost and what was found when a ravaging rain swept through metro Detroit",
+                            "Sign contract for 'What are conference organizers afraid of?'",
+                        ],
+                    ],
+                    [
+                        "server",
+                        "mdi-cloud",
+                        [
+                            "Lines From Great Russian Literature? Or E-mails From My Boss?",
+                            "Flooded: One year later, assessing what was lost and what was found when a ravaging rain swept through metro Detroit",
+                            "Sign contract for 'What are conference organizers afraid of?'",
+                        ],
+                    ],
+                ],
+
             },
             curTask: "bugs",
         }
@@ -546,11 +592,29 @@ const dashboard = {
             this.curTask = task.id;
             this.task.tab[0] = task.offsetWidth;
             this.task.tab[1] = task.offsetLeft;
+            this.task.tab[2] = document.getElementById("task-list").clientWidth;
+            console.log(this.task.tab[1]+this.task.tab[0], this.task.tab[2])
+        },
+        check(event) {
+            var div = event.currentTarget;
+            if (div.children[1].checked) {
+                div.children[0].className = "mdi mdi-checkbox-blank-outline unchecked";
+                div.children[1].checked = false;
+                div.children[2].className = "selection-area unchecked";
+            }
+            else {
+                div.children[0].className = "mdi mdi-checkbox-marked";
+                div.children[1].checked = true;
+                div.children[2].className = "selection-area";
+            }
         },
         onResize() {
-            this.menu[0] = this.$refs.selector.getBoundingClientRect().left;
-            this.scrollX = document.documentElement.scrollTop;
-            this.maxheight = this.$refs.selector.getBoundingClientRect().top;
+            if (this.menu[2]) {
+                this.menu[0] = this.$refs.selector.getBoundingClientRect().left;
+                this.scrollX = document.documentElement.scrollTop;
+                this.maxheight = this.$refs.selector.getBoundingClientRect().top;
+            }
+            this.task.tab[2] = document.getElementById("task-list").clientWidth;
         },
     },
     watch:{
@@ -563,13 +627,56 @@ const dashboard = {
         
         this.task.tab[0] = document.getElementById(this.curTask).offsetWidth;
         this.task.tab[1] = document.getElementById(this.curTask).offsetLeft;
+        this.task.tab[2] = document.getElementById("task-list").clientWidth;
     },
     beforeDestroy() {
         window.removeEventListener('resize', this.onResize);
     },
 }
 const userProfile = {
-    template:`<section id="User Profile"></section>`,
+    template:`
+        <section id="User Profile" class=" container-fluid">
+            <div class="row">
+                <div class="col-12 col-md-8">
+                    <div class="card">
+                        <div class="card-head" style="background-color:#4caf50;">
+                            <div style="font-size:20px;font-weight:100;padding-bottom:5px;color:white;">Edit Profile</div>
+                            <div style="font-size:14px;color:white;">Complete your profile</div>
+                        </div>
+                        <div class="card-body">
+                            <form>
+                                <div class="container">
+                                    <div class="row">
+                                        <div class="col-12 col-md-4">company</div>
+                                        <div class="col-12 col-md-4">User Name</div>
+                                        <div class="col-12 col-md-4">Email Address</div>
+                                        <div class="col-12 col-md-6">First Name</div>
+                                        <div class="col-12 col-md-6">Last Name</div>
+                                        <div class="col-12 col-md-12">Address</div>
+                                        <div class="col-12 col-md-4">City</div>
+                                        <div class="col-12 col-md-4">Country</div>
+                                        <div class="col-12 col-md-4">Postal Code</div>
+                                        <div class="col-12 col-md-12">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-4">
+                    <div class="card">
+                        <div class="card-body"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    `,
+    props: [],
+    data() {
+        return {
+
+        }
+    },
 }
 const regularTables = {
     template:`<section id="Regular Tables"></section>`,
@@ -599,8 +706,6 @@ const myMain = {
     },
     template:`
         <main>
-            <dashboard></dashboard>
-
             <dashboard v-if="curPage==='Dashboard'" :left=left></dashboard>
             <user-profile v-else-if="curPage==='User Profile'"></user-profile>
             <regular-tables v-else-if="curPage==='Regular Tables'"></regular-tables>
@@ -615,7 +720,7 @@ const myMain = {
         left: String,
     }
 }
-Vue.createApp(myMain).mount('#app')
+// Vue.createApp(myMain).mount('#app')
 
 const myFooter = {
     template:`
@@ -653,7 +758,7 @@ const app = {
         myFooter,
     },
     template:`
-        <my-header :curPage=curPage :style="{'left':left}" @shift=shiftNav></my-header>
+        <my-header :curPage=curPage :style="{'left':left}" @shift=shiftNav @change=changePage></my-header>
         <my-nav :curPage=curPage :transform=transform @change=changePage></my-nav>
         <my-main :curPage=curPage :left=left :style="{'padding-left':left}"></my-main>
         <my-footer :style="{'margin-left':left}"></my-footer>
@@ -661,16 +766,16 @@ const app = {
     data() {
         return {
             curPage: "Dashboard",
-            Nav: true,
-            transform: "translateX(0%)",
-            left: "260px",
+            Nav: false,
+            transform: "translateX(-100%)",
+            left: "0px",
         }
     },
     created() {
         window.addEventListener('resize', this.onResize)
     },
     methods: {
-        changePage(newPage) {this.curPage = newPage},
+        changePage(newPage) {this.curPage = newPage;},
         shiftNav() {
             if (this.Nav) {
                 this.transform = "translateX(-100%)"
@@ -695,10 +800,22 @@ const app = {
             }
         },
     },
+    mounted() {
+        if (window.innerWidth < 940) {
+            this.transform = "translateX(-100%)"
+            this.left = "0px"
+            this.Nav = false
+        }
+        else {
+            this.transform = "translateX(0%)"
+            this.left = "260px"
+            this.Nav = true
+        }
+    },
     computed: {},
     destroyed() {
         window.removeEventListener("resize", this.onResize);
     },
 }
 
-// Vue.createApp(app).mount('#app')
+Vue.createApp(app).mount('#app')

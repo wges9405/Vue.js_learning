@@ -41,6 +41,8 @@
     justify-content:center;
     width:100%;
     height:100%;
+    font-weight: 300;
+    font-size: 10px;
 }
   .ct-y-tag span{
     display:flex;
@@ -49,6 +51,8 @@
     justify-content:flex-end;
     width:100%;
     height:100%;
+    font-size: 10px;
+    overflow: hidden;
 }
 .ct-bar {
     stroke:rgba(139, 0, 0, .75);
