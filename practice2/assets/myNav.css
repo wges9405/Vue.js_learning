@@ -6,6 +6,11 @@ nav {
     transition: .5s;
     z-index: 10;
     box-sizing: inherit;
+    overflow: hidden;
+}
+
+.nav-abs{
+    position: absolute;
 }
 /* @media screen and (max-width: 900px) {
     nav {transform: translateX(-100%);}

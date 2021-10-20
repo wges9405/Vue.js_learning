@@ -39,14 +39,16 @@ button.tool {
     flex-direction: row;
 }
 
-.search-bar {
+.input-bar {
     display: flex;
     flex-direction: row;
     align-items: center;
     position: relative;
     box-sizing: inherit;
+    max-width: 163px;
+    min-width: 0;
 }
-.search-input {
+.input {
     position: relative;
     background-color: transparent;
     border: none;
@@ -54,8 +56,9 @@ button.tool {
     outline: none;
     box-sizing: inherit;
     font-size: 16px;
+    width: 100%;
 }
-.search-label {
+.input-label {
     left: 0;
     top: 5px;
     position: absolute;
@@ -64,9 +67,11 @@ button.tool {
     pointer-events: none;
     box-sizing: inherit;
     transition: .15s ease-in-out;
-    
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
-.search-ripple{
+.input-ripple{
     content: '';
     left:50%;
     bottom: 0;
@@ -77,19 +82,18 @@ button.tool {
     transition: .3s;
 }
 ::placeholder {color :transparent;}
-.search-input:not(:placeholder-shown) + .search-label  {
+.input:not(:placeholder-shown) + .input-label  {
     top:-15px;
     font-size: 10px;
 }
-.search-input:focus ~ .search-label  {
+.input:focus ~ .input-label  {
     color: purple;
     top:-15px;
     font-size: 10px;
 }
-.search-input:focus ~ .search-ripple {
+.input:focus ~ .input-ripple {
     left: 0%;
     width: 100%;
-    background-color: purple;
 }
 
 
@@ -106,6 +110,7 @@ button.tool {
     transition: .3s;
     border-radius: 5px;
     outline: none;
+    flex: 0 0 auto;
 }
 .tool-btn:hover {
     color: black;
@@ -142,4 +147,72 @@ button.tool {
     transform: scale(0, 0);
     opacity: .3;
     transition: 0s;
+}
+
+.toolbar .bell i{
+    position: relative;
+}
+.notifiSymbol{
+    position: absolute;
+    border-radius: 50%;
+    right: -6px;
+    top: -4px;
+    width: 20px;
+    height: 20px;
+    font-size: 10px;
+    font-weight: bolder;
+    font-style: normal;
+    padding: 2px;
+    color: white;
+    background-color: red;
+    border: 2px solid white;
+}
+.notifications{
+    position: absolute;
+    z-index:6;
+    top:50px;
+    max-width:300px;
+    width: 70%;
+    background-color:white;
+    border-radius: 5px;
+    padding: 5px 0;
+    color: black;
+    
+}
+.notifies{
+    position: relative;
+    margin: 0 5px;
+    padding: 10px 20px;
+    color: black;
+}
+.notifies:hover{
+    color: white;
+    background-color: #9c27b0;
+}
+.notifies::before{
+    position: absolute;
+    content: "";
+    cursor: pointer;
+    opacity: 0;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+.notifies:hover::before{
+    opacity: 1;
+}
+.notify{
+    background-color: transparent;
+    flex-wrap: nowrap;
+    flex: 1 1 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 13px;
+    line-height: 1.2;
+    color: black;
+}
+.notifies:hover > .notify{
+    color: white !important;
 }

@@ -18,3 +18,20 @@ body {
     max-width: 100%;
     min-height: 100vh;
 }
+
+.boxShadow{
+    box-shadow: 0 3px 1px -2px rgb(0 0 0 / 20%), 0 2px 2px 0 rgb(0 0 0 / 14%), 0 1px 5px 0 rgb(0 0 0 / 12%);
+}
+
+.overlay{
+    z-index: 6;
+    position: fixed;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: auto;
+    cursor: default;
+    background-color: rgba(0,0,0,.3);
+    transition: .3s;
+}

@@ -1,6 +1,6 @@
 const myNav = {
     template:`
-        <nav :style="{'transform':transform}">
+        <nav id="nav" :class="[small?'nav-abs': '']" :style="{'transform':transform}">
             <div class="nav-bg"></div>
             <div class="nav-content">
                 <hr>
@@ -40,6 +40,7 @@ const myNav = {
     props: {
         curPage: String,
         transform: String,
+        small: Boolean,
     },
     data() {
         return {
@@ -103,20 +104,20 @@ const myHeader = {
         <header>
             <div class="toolbar">
                 <div class="nav-shift">
-                    <button class="tool btn-nav-shift" @click="shiftNav()">
+                    <button class="tool btn-nav-shift" @click.stop="shiftNav()">
                         <i class="mdi icon mdi-dots-vertical"></i>
                     </button>
                 </div>
-                <div style="color: #505050;">{{ curPage }}</div>
+                <div style="color: #505050;" v-show="left=='260px'">{{ curPage }}</div>
                 <div style="flex-grow:1"></div>
                 <!---->
-                <div class="search-bar">
-                    <div style="display:flex;position:relative">
-                        <input id="input-search" type="text" class="search-input" placeholder="A">
-                        <label class="search-label">Search</label>
-                        <div class="search-ripple"></div>
+                <div class="input-bar">
+                    <div style="display:flex;position:relative;width:100%;">
+                        <input id="input-search" type="text" class="input" placeholder="A">
+                        <label class="input-label">Search</label>
+                        <div class="input-ripple"></div>
                     </div>
-                    <div>
+                    <div v-show="left=='260px'">
                         <button class="tool">
                             <i class="mdi icon mdi-magnify"></i>
                         </button>
@@ -127,12 +128,20 @@ const myHeader = {
                 <a class="list list-icon tool-btn ripple" href="" :class="[curPage=='Dashboard'?'active':'']" @click.prevent="changePage('Dashboard')">
                     <i class="mdi icon mdi-view-dashboard"></i>
                 </a>
-                <button  class="list list-icon tool-btn ripple bell">
-                    <i class="mdi icon mdi-bell" style="color: #000;"></i>
+                <button id="bell" class="list list-icon tool-btn ripple bell" @click.stop="openNotification($event)">
+                    <i class="mdi icon mdi-bell" style="color: #000;"><span class="notifiSymbol">{{ notifies.length }}</span></i>
+                    
                 </button>
                 <a  class="list list-icon tool-btn ripple" href="" :class="[curPage=='User Profile'?'active':'']" @click.prevent="changePage('User Profile')">
                     <i class="mdi icon mdi-account"></i>
                 </a>
+            </div>
+            <div class="notifications" v-show=notifySet[0] :style="{'right':notifySet[1]+'px'}">
+                <div>
+                    <div  class="notifies" v-for="n in notifies">
+                        <div class="notify">{{ n }}</div>
+                    </div>
+                </div>
             </div>
         </header>
     `,
@@ -140,14 +149,35 @@ const myHeader = {
     methods: {
         shiftNav() {this.$emit('shift');},
         changePage(newPage) {this.$emit('change', newPage);},
+        openNotification(event) {
+            this.notifySet[0] = !this.notifySet[0];
+            this.notifySet[1] = document.documentElement.clientWidth-event.currentTarget.getBoundingClientRect().right;
+        },
+        onResize() {
+            this.notifySet[1] = document.documentElement.clientWidth-document.getElementById("bell").getBoundingClientRect().right;
+        },
     },
     props: {
+        left: String,
         curPage: String,
+        // notifies: Object,
     },
     data() {
         return {
-
+            notifySet: [false,0],
+            notifies: [
+                "Mike John Responded to your email",
+                "Another one",
+                "Another Notification",
+                "You're now friends with Andrew",
+                "You have 5 new tasks",
+            ],
         }
+    },
+    mounted() {
+        var that=this;
+        window.addEventListener('resize', that.onResize);
+        document.addEventListener('click', ()=>{that.notifySet[0] = false;});
     },
 }
 const svg_content = {
@@ -622,7 +652,7 @@ const dashboard = {
     mounted() {
         var that = this;
         window.addEventListener('resize', that.onResize);
-        console.log(that.left);
+        // console.log(that.left);
         document.addEventListener('click', ()=>{that.menu[2] = false;});
         
         this.task.tab[0] = document.getElementById(this.curTask).offsetWidth;
@@ -635,7 +665,7 @@ const dashboard = {
 }
 const userProfile = {
     template:`
-        <section id="User Profile" class=" container-fluid">
+        <section id="User Profile" class=" container-fluid profile">
             <div class="row">
                 <div class="col-12 col-md-8">
                     <div class="card">
@@ -644,19 +674,77 @@ const userProfile = {
                             <div style="font-size:14px;color:white;">Complete your profile</div>
                         </div>
                         <div class="card-body">
-                            <form>
+                            <form novalidate="novalidate">
                                 <div class="container">
                                     <div class="row">
-                                        <div class="col-12 col-md-4">company</div>
-                                        <div class="col-12 col-md-4">User Name</div>
-                                        <div class="col-12 col-md-4">Email Address</div>
-                                        <div class="col-12 col-md-6">First Name</div>
-                                        <div class="col-12 col-md-6">Last Name</div>
-                                        <div class="col-12 col-md-12">Address</div>
-                                        <div class="col-12 col-md-4">City</div>
-                                        <div class="col-12 col-md-4">Country</div>
-                                        <div class="col-12 col-md-4">Postal Code</div>
-                                        <div class="col-12 col-md-12">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
+                                        <div class="col-12 col-md-4 col">
+                                            <div class="input-bar">
+                                                <input class="input" placeholder="A">
+                                                <label class="input-label">Company</label>
+                                                <div class="input-ripple"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-4 col">
+                                            <div class="input-bar">
+                                                <input class="input" placeholder="A">
+                                                <label class="input-label">User Name</label>
+                                                <div class="input-ripple"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-4 col">
+                                            <div class="input-bar">
+                                                <input class="input" placeholder="A">
+                                                <label class="input-label">Email Address</label>
+                                                <div class="input-ripple"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-6 col">
+                                            <div class="input-bar">
+                                                <input class="input" placeholder="A">
+                                                <label class="input-label">First Name</label>
+                                                <div class="input-ripple"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-6 col">
+                                            <div class="input-bar">
+                                                <input class="input" placeholder="A">
+                                                <label class="input-label">Last Name</label>
+                                                <div class="input-ripple"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-12 col">
+                                            <div class="input-bar">
+                                                <input class="input" placeholder="A">
+                                                <label class="input-label">Address</label>
+                                                <div class="input-ripple"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-4 col">
+                                            <div class="input-bar">
+                                                <input class="input" placeholder="A">
+                                                <label class="input-label">City</label>
+                                                <div class="input-ripple"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-4 col">
+                                            <div class="input-bar">
+                                                <input class="input" placeholder="A">
+                                                <label class="input-label">Country</label>
+                                                <div class="input-ripple"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-4 col">
+                                            <div class="input-bar">
+                                                <input class="input" placeholder="A">
+                                                <label class="input-label">Postal Code</label>
+                                                <div class="input-ripple"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col" style="text-align:right;">
+                                            <div class="task-header ripple3 boxShadow">
+                                                <span style="text-transform:uppercase">update profile</span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </form>
@@ -665,7 +753,16 @@ const userProfile = {
                 </div>
                 <div class="col-12 col-md-4">
                     <div class="card">
-                        <div class="card-body"></div>
+                        <div style="display:flex;justify-content:center;align-items:center;height:128px;width:128px;margin: 0 auto;">
+                            <div id="myPic" class="boxShadow" ></div>
+                        </div>
+                        <div class="card-body" style="display:flex;flex-direction:column;justify-content:center;align-items:center;">
+                            <h4>Deng-Ruei Tsai</h4>
+                            <p>testtest</p>    
+                            <div class="task-header ripple3 boxShadow" style="border-radius:20px;margin-bottom:10px;">
+                                <span style="text-transform:uppercase">follow</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -674,8 +771,10 @@ const userProfile = {
     props: [],
     data() {
         return {
-
         }
+    },
+    methods() {
+        
     },
 }
 const regularTables = {
@@ -758,58 +857,85 @@ const app = {
         myFooter,
     },
     template:`
-        <my-header :curPage=curPage :style="{'left':left}" @shift=shiftNav @change=changePage></my-header>
-        <my-nav :curPage=curPage :transform=transform @change=changePage></my-nav>
+        <div class="overlay" v-show="NavSmall&&!NavClose"></div>
+        <my-header :curPage=curPage :left=left :style="{'left':left}" @shift=shiftNav @change=changePage></my-header>
+        <my-nav :curPage=curPage :transform=transform :small=NavSmall @change=changePage></my-nav>
         <my-main :curPage=curPage :left=left :style="{'padding-left':left}"></my-main>
         <my-footer :style="{'margin-left':left}"></my-footer>
     `,
     data() {
         return {
-            curPage: "Dashboard",
-            Nav: false,
+            curPage: "User Profile",
+            NavSet: [false, false],
+            NavClose: false,
+            NavSmall: false,
             transform: "translateX(-100%)",
             left: "0px",
         }
     },
     created() {
-        window.addEventListener('resize', this.onResize)
+        window.addEventListener('resize', this.onResize);
+        document.addEventListener('click', ()=>{
+            if (this.NavSmall) {
+                this.NavClose = true;
+                this.transform = "translateX(-100%)";
+                document.getElementsByTagName('html')[0].style.overflowY = '';
+            }
+        });
     },
     methods: {
-        changePage(newPage) {this.curPage = newPage;},
+        changePage(newPage) {
+            this.curPage = newPage;
+            if (this.NavSmall) {
+                this.NavClose = true;
+                this.transform = "translateX(-100%)";
+                document.getElementsByTagName('html')[0].style.overflowY = '';
+            }
+        },
         shiftNav() {
-            if (this.Nav) {
-                this.transform = "translateX(-100%)"
-                this.left = "0px"
+            if (this.NavSmall) {
+                this.NavClose = false;
+                this.transform = "translateX(0%)";
+                document.getElementsByTagName('html')[0].style.overflowY = 'hidden';
             }
             else {
-                this.transform = "translateX(0%)"
-                this.left = "260px"
+                this.NavClose = !this.NavClose;
+                this.transform = this.NavClose ? "translateX(-100%)" : "translateX(0%)";
+                this.left = this.NavClose ? "0px" : "260px";
             }
-            this.Nav = !this.Nav
         },
         onResize() {
-            if (window.innerWidth < 940) {
-                this.transform = "translateX(-100%)"
-                this.left = "0px"
-                this.Nav = false
+            if (this.NavSmall) {
+                if (document.documentElement.clientWidth >= 940) {
+                    this.NavSmall = false;
+                    this.NavClose = false;
+                    this.transform = "translateX(0%)";
+                    this.left = "260px";
+                    document.getElementsByTagName('html')[0].style.overflowY = '';
+                }
             }
             else {
-                this.transform = "translateX(0%)"
-                this.left = "260px"
-                this.Nav = true
+                if (document.documentElement.clientWidth < 940) {
+                    this.NavSmall = true;
+                    this.NavClose = true;
+                    this.transform = "translateX(-100%)";
+                    this.left = "0px";
+                }
             }
         },
     },
     mounted() {
-        if (window.innerWidth < 940) {
-            this.transform = "translateX(-100%)"
-            this.left = "0px"
-            this.Nav = false
+        if (document.documentElement.clientWidth < 940) {
+            this.NavSmall = true;
+            this.NavClose = true;
+            this.transform = this.NavClose ? "translateX(-100%)" : "translateX(0%)";
+            this.left = this.NavClose ? "0px" : "260px";
         }
         else {
-            this.transform = "translateX(0%)"
-            this.left = "260px"
-            this.Nav = true
+            this.NavSmall = false;
+            this.NavClose = false;
+            this.transform = this.NavClose ? "translateX(-100%)" : "translateX(0%)";
+            this.left = this.NavClose ? "0px" : "260px";
         }
     },
     computed: {},
